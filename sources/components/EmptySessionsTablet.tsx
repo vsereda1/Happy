@@ -6,6 +6,10 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useAllMachines } from '@/sync/storage';
 import { isMachineOnline } from '@/utils/machineUtils';
 import { useRouter } from 'expo-router';
+import { RoundButton } from '@/components/RoundButton';
+import { useConnectTerminal } from '@/hooks/useConnectTerminal';
+import { Modal } from '@/modal';
+import { t } from '@/text';
 
 const stylesheet = StyleSheet.create((theme) => ({
     container: {
@@ -59,11 +63,12 @@ export function EmptySessionsTablet() {
     const styles = stylesheet;
     const router = useRouter();
     const machines = useAllMachines();
-    
+    const { connectTerminal, connectWithUrl, isLoading } = useConnectTerminal();
+
     const hasOnlineMachines = React.useMemo(() => {
         return machines.some(machine => isMachineOnline(machine));
     }, [machines]);
-    
+
     const handleStartNewSession = () => {
         router.push('/new');
     };
@@ -102,9 +107,39 @@ export function EmptySessionsTablet() {
                     </Pressable>
                 </>
             ) : (
-                <Text style={styles.descriptionText}>
-                    Open a new terminal on your computer to start session.
-                </Text>
+                <>
+                    <Text style={styles.descriptionText}>
+                        Open a new terminal on your computer to start session.
+                    </Text>
+                    <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
+                        <RoundButton
+                            title={t('components.emptyMainScreen.openCamera')}
+                            size="large"
+                            loading={isLoading}
+                            onPress={connectTerminal}
+                        />
+                        <RoundButton
+                            title={t('connect.enterUrlManually')}
+                            size="large"
+                            display="inverted"
+                            onPress={async () => {
+                                const url = await Modal.prompt(
+                                    t('modals.authenticateTerminal'),
+                                    t('modals.pasteUrlFromTerminal'),
+                                    {
+                                        placeholder: 'happy://terminal?...',
+                                        cancelText: t('common.cancel'),
+                                        confirmText: t('common.authenticate')
+                                    }
+                                );
+
+                                if (url?.trim()) {
+                                    connectWithUrl(url.trim());
+                                }
+                            }}
+                        />
+                    </View>
+                </>
             )}
         </View>
     );

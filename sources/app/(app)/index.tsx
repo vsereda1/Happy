@@ -1,6 +1,6 @@
 import { RoundButton } from "@/components/RoundButton";
 import { useAuth } from "@/auth/AuthContext";
-import { Text, View, Image, Platform } from "react-native";
+import { Text, View, Image, Platform, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as React from 'react';
 import { encodeBase64 } from "@/encryption/base64";
@@ -66,18 +66,18 @@ function NotAuthenticated() {
                 <>
                     <View style={styles.buttonContainer}>
                         <RoundButton
-                            title={t('welcome.loginWithMobileApp')}
-                            onPress={() => {
-                                trackAccountRestored();
-                                router.push('/restore');
-                            }}
+                            title={t('welcome.createAccount')}
+                            action={createAccount}
                         />
                     </View>
                     <View style={styles.buttonContainerSecondary}>
                         <RoundButton
                             size="normal"
-                            title={t('welcome.createAccount')}
-                            action={createAccount}
+                            title={t('welcome.linkOrRestoreAccount')}
+                            onPress={() => {
+                                trackAccountRestored();
+                                router.push('/restore');
+                            }}
                             display="inverted"
                         />
                     </View>
@@ -101,6 +101,14 @@ function NotAuthenticated() {
                             display="inverted"
                         />
                     </View>
+                    <Pressable
+                        style={styles.serverConfigLink}
+                        onPress={() => router.push('/server')}
+                    >
+                        <Text style={styles.serverConfigText}>
+                            {t('server.serverConfiguration')}
+                        </Text>
+                    </Pressable>
                 </>
             )}
         </View>
@@ -127,18 +135,18 @@ function NotAuthenticated() {
                         ? (<>
                             <View style={styles.landscapeButtonContainer}>
                                 <RoundButton
-                                    title={t('welcome.loginWithMobileApp')}
-                                    onPress={() => {
-                                        trackAccountRestored();
-                                        router.push('/restore');
-                                    }}
+                                    title={t('welcome.createAccount')}
+                                    action={createAccount}
                                 />
                             </View>
                             <View style={styles.landscapeButtonContainerSecondary}>
                                 <RoundButton
                                     size="normal"
-                                    title={t('welcome.createAccount')}
-                                    action={createAccount}
+                                    title={t('welcome.linkOrRestoreAccount')}
+                                    onPress={() => {
+                                        trackAccountRestored();
+                                        router.push('/restore');
+                                    }}
                                     display="inverted"
                                 />
                             </View>
@@ -161,6 +169,14 @@ function NotAuthenticated() {
                                     display="inverted"
                                 />
                             </View>
+                            <Pressable
+                                style={styles.serverConfigLink}
+                                onPress={() => router.push('/server')}
+                            >
+                                <Text style={styles.serverConfigText}>
+                                    {t('server.serverConfiguration')}
+                                </Text>
+                            </Pressable>
                         </>)
                     }
                 </View>
@@ -209,6 +225,17 @@ const styles = StyleSheet.create((theme) => ({
         marginBottom: 16,
     },
     buttonContainerSecondary: {
+        marginBottom: 16,
+    },
+    serverConfigLink: {
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+    },
+    serverConfigText: {
+        ...Typography.default(),
+        fontSize: 14,
+        color: theme.colors.primary,
+        textAlign: 'center',
     },
     // Landscape styles
     landscapeContainer: {
